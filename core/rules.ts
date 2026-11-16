@@ -3,6 +3,7 @@
 // apply() decides how, or whether, to show them over time.
 
 import { isPassable, type Terrain, terrainAt } from "./terrain.ts";
+import { type Item, itemAt } from "./items.ts";
 
 export type Cell = { x: number; y: number };
 
@@ -13,6 +14,8 @@ export type Direction = "north" | "south" | "east" | "west";
 export type GameState = {
   seed: number;
   player: Cell;
+  inventory: Partial<Record<Item, number>>;
+  taken: string[];
 };
 
 // Command: https://gameprogrammingpatterns.com/command.html
@@ -21,7 +24,8 @@ export type Command = { type: "move"; direction: Direction };
 // Domain Event: https://martinfowler.com/eaaDev/DomainEvent.html
 export type GameEvent =
   | { type: "moved"; from: Cell; to: Cell }
-  | { type: "blocked"; at: Cell; toward: Cell; terrain: Terrain };
+  | { type: "blocked"; at: Cell; toward: Cell; terrain: Terrain }
+  | { type: "collected"; item: Item; at: Cell; total: number };
 
 const STEPS: Record<Direction, Cell> = {
   north: { x: 0, y: -1 },
@@ -32,7 +36,7 @@ const STEPS: Record<Direction, Cell> = {
 
 // Singleton, avoided on purpose: tests make as many games as they need. https://gameprogrammingpatterns.com/singleton.html
 export function newGame(seed: number): GameState {
-  return { seed, player: { x: 0, y: 0 } };
+  return { seed, player: { x: 0, y: 0 }, inventory: {}, taken: [] };
 }
 
 // The single way in. It updates the state it is given and returns the events.
@@ -57,5 +61,16 @@ function move(state: GameState, direction: Direction): GameEvent[] {
   }
   state.player.x = to.x;
   state.player.y = to.y;
-  return [{ type: "moved", from, to }];
+  const events: GameEvent[] = [{ type: "moved", from, to }];
+
+  const item = itemAt(state.seed, to.x, to.y);
+  const key = `${to.x}, ${to.y}`;
+  if (item && !state.taken.includes(key)) {
+    state.taken.push(key);
+    const total = (state.inventory[item] ?? 0) + 1;
+    state.inventory[item] = total;
+    events.push({ type: "collected", item, at: { ...to }, total });
+  }
+
+  return events;
 }

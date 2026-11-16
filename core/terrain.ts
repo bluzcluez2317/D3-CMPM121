@@ -45,7 +45,7 @@ function mix(a: number, b: number, t: number): number {
 
 // A hash, not a generator: the same inputs give the same number in [0, 1), with
 // no memory of earlier calls.
-function gridValue(seed: number, x: number, y: number): number {
+export function gridValue(seed: number, x: number, y: number): number {
   let hash = Math.imul(seed, 0x9e3779b1) ^ Math.imul(x, 0x85ebca6b) ^
     Math.imul(y, 0xc2b2ae35);
   hash = Math.imul(hash ^ (hash >>> 15), 0x2c1b3c6d);

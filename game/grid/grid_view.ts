@@ -1,8 +1,14 @@
 // The only folder allowed to import Phaser, and for one job: drawing the grid.
 // Input, the HUD, sound, and the order of events all live outside it.
 import Phaser from "phaser";
-import type { Cell, GameEvent, GameState, Terrain } from "../../core/mod.ts";
-import { terrainAt } from "../../core/mod.ts";
+import type {
+  Cell,
+  GameEvent,
+  GameState,
+  Item,
+  Terrain,
+} from "../../core/mod.ts";
+import { itemAt, terrainAt } from "../../core/mod.ts";
 
 export const CELL_SIZE = 32;
 const VIEW_WIDTH = 800;
@@ -11,6 +17,16 @@ const WALK_MS = 120;
 const BUMP_MS = 60;
 const MARKER_COLOR = 0xf5e6a8;
 const BUMP_COLOR = 0xe0533d;
+
+const ITEM_COLORS: Record<Item, number> = {
+  "Note piece": 0x000000,
+  "Axe": 0x808080,
+  "Candle": 0xF5F5DC,
+  "Boat": 0x964B00,
+  "Wooden Board": 0x964B00,
+  "Dry Wood": 0x895129,
+};
+const PICKUP_MS = 80;
 
 const TERRAIN_COLORS: Record<Terrain, number> = {
   grass: 0x5d9e4a,
@@ -36,6 +52,7 @@ function cellCenter({ x, y }: Cell): Cell {
 export class GridView extends Phaser.Scene {
   private readonly seed: number;
   private readonly start: Cell;
+  private readonly taken: Set<string>;
   private ground!: Phaser.GameObjects.Graphics;
   private marker!: Phaser.GameObjects.Arc;
 
@@ -43,6 +60,7 @@ export class GridView extends Phaser.Scene {
     super("grid");
     this.seed = state.seed;
     this.start = { ...state.player };
+    this.taken = new Set(state.taken);
   }
 
   create() {
@@ -82,11 +100,27 @@ export class GridView extends Phaser.Scene {
         return this.walk(event.to);
       case "blocked":
         return this.bump(event.at, event.toward);
+      case "collected":
+        return this.collect(event.at);
       default:
         // A new event type fails to type-check here until it has a presentation.
         event satisfies never;
         return Promise.resolve();
     }
+  }
+
+  private collect(at: Cell): Promise<void> {
+    this.taken.add(`${at.x},${at.y}`);
+    this.drawCellsAround(at);
+    return new Promise((done) => {
+      this.tweens.add({
+        targets: this.marker,
+        scale: 1.3,
+        duration: PICKUP_MS,
+        yoyo: true,
+        onComplete: () => done(),
+      });
+    });
   }
 
   private walk(to: Cell): Promise<void> {
@@ -133,6 +167,15 @@ export class GridView extends Phaser.Scene {
           CELL_SIZE - 1,
           CELL_SIZE - 1,
         );
+        const item = itemAt(this.seed, x, y);
+        if (item && !this.taken.has(`${x},${y}`)) {
+          this.ground.fillStyle(ITEM_COLORS[item]);
+          this.ground.fillCircle(
+            x * CELL_SIZE + CELL_SIZE / 2,
+            y * CELL_SIZE + CELL_SIZE / 2,
+            CELL_SIZE * 0.18,
+          );
+        }
       }
     }
   }
