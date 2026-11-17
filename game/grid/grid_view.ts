@@ -20,10 +20,12 @@ const BUMP_COLOR = 0xe0533d;
 
 const ITEM_COLORS: Record<Item, number> = {
   "Note piece": 0x000000,
+  "Note": 0x000000,
   "Axe": 0x808080,
   "Candle": 0xF5F5DC,
-  "Boat": 0x964B00,
+  "Broken Boat": 0x964B00,
   "Wooden Board": 0x964B00,
+  "Fixed Boat": 0x964B00,
   "Dry Wood": 0x895129,
 };
 const PICKUP_MS = 80;
