@@ -106,6 +106,10 @@ export class GridView extends Phaser.Scene {
         return this.bump(event.at, event.toward);
       case "collected":
         return this.collect(event.at);
+      case "crafted":
+      case "missing":
+      case "light":
+        return Promise.resolve();
       default:
         // A new event type fails to type-check here until it has a presentation.
         event satisfies never;

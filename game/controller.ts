@@ -1,4 +1,9 @@
-import { apply, type Command, type Direction } from "../core/mod.ts";
+import {
+  apply,
+  type Command,
+  type Direction,
+  type RecipeName,
+} from "../core/mod.ts";
 import type { GameState } from "../core/mod.ts";
 import type { Presenter } from "./presenter.ts";
 
@@ -7,6 +12,12 @@ const ARROWS: Record<string, Direction> = {
   ArrowDown: "south",
   ArrowLeft: "west",
   ArrowRight: "east",
+};
+
+const RECIPE_KEYS: Record<string, RecipeName> = {
+  "1": "note",
+  "2": "boat",
+  "3": "fuel",
 };
 
 // Input in, core in the middle, presenter out. None of those three knows the others,
@@ -38,6 +49,14 @@ export class Controller {
 
   private keyDown(event: KeyboardEvent) {
     const direction = ARROWS[event.key];
+    const recipe = RECIPE_KEYS[event.key];
+    if (recipe && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (!event.repeat) {
+        this.pressed = { type: "craft", recipe };
+        this.next();
+      }
+      return;
+    }
     if (!direction || event.ctrlKey || event.metaKey || event.altKey) return;
     // Otherwise arrow keys would also scroll the page.
     event.preventDefault();

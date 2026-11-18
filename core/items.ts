@@ -21,6 +21,17 @@ const ITEMS: Item[] = [
   "Dry Wood",
 ];
 
+const _SPAWNED: Item[] = [
+  "Note piece",
+  "Note piece",
+  "Note piece",
+  "Axe",
+  "Candle",
+  "Broken Boat",
+  "Wooden Board",
+  "Dry Wood",
+];
+
 const DENSITY = 0.05;
 
 export function itemAt(seed: number, x: number, y: number): Item | null {

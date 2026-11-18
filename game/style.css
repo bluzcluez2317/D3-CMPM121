@@ -8,7 +8,7 @@ body {
 
 #app {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
@@ -81,4 +81,21 @@ body {
     transparent 55%,
     rgb(0 0 0 / 0.5) 100%
   );
+}
+
+#hud {
+  box-sizing: border-box;
+  padding: 20px;
+  background: #000000;
+  border: 1px solid #526779;
+  border-radius: 8px;
+  font-family: monospace;
+}
+
+#inventory-heading {
+  margin: 0 0 12px;
+  color: #880000;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
