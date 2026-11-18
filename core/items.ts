@@ -2,18 +2,22 @@ import { gridValue, isPassable, terrainAt } from "./terrain.ts";
 
 export type Item =
   | "Note piece"
+  | "Note"
   | "Axe"
   | "Candle"
-  | "Boat"
+  | "Broken Boat"
   | "Wooden Board"
+  | "Fixed Boat"
   | "Dry Wood";
 
 const ITEMS: Item[] = [
   "Note piece",
+  "Note",
   "Axe",
   "Candle",
-  "Boat",
+  "Broken Boat",
   "Wooden Board",
+  "Fixed Boat",
   "Dry Wood",
 ];
 
