@@ -7,7 +7,7 @@ import {
   terrainAt,
   WOOD_LIGHT,
 } from "./mod.ts";
-import { itemAt } from "./items.ts";
+import { itemAt, itemPlacements } from "./items.ts";
 
 // Each test has a Given-When-Then shape: https://martinfowler.com/bliki/GivenWhenThen.html
 const SEED = 121;
@@ -70,32 +70,50 @@ Deno.test("dry wood extends the candle without using it up", () => {
 });
 
 Deno.test("an item is collected once, then the cell is empty", () => {
-  let state: GameState | undefined;
-  for (let x = 2; x < 10_000 && !state; x++) {
-    if (
-      isPassable(terrainAt(SEED, x, 0)) && itemAt(SEED, x, 0) === null &&
-      itemAt(SEED, x + 1, 0) !== null
-    ) {
-      state = {
-        seed: SEED,
-        player: { x, y: 0 },
-        inventory: {},
-        taken: [],
-        light: 0,
-      };
+  const { x, y, item } = itemPlacements(SEED)[0];
+  const approaches = [
+    { direction: "east", back: "west", dx: 1, dy: 0 },
+    { direction: "west", back: "east", dx: -1, dy: 0 },
+    { direction: "south", back: "north", dx: 0, dy: 1 },
+    { direction: "north", back: "south", dx: 0, dy: -1 },
+  ] as const;
+  // Stand beside the item, on a cell that is walkable and empty.
+  const approach = approaches.find(({ dx, dy }) =>
+    isPassable(terrainAt(SEED, x - dx, y - dy)) &&
+    itemAt(SEED, x - dx, y - dy) === null
+  );
+  if (!approach) throw new Error("Found no cell beside the item.");
+  const state: GameState = {
+    seed: SEED,
+    player: { x: x - approach.dx, y: y - approach.dy },
+    inventory: {},
+    taken: [],
+    light: 0,
+  };
+
+  const first = apply(state, { type: "move", direction: approach.direction });
+  assertEquals(first.map((e) => e.type).includes("collected"), true);
+  assertEquals(state.inventory[item], 1);
+
+  apply(state, { type: "move", direction: approach.back });
+  const second = apply(state, { type: "move", direction: approach.direction });
+  assertEquals(second.map((e) => e.type).includes("collected"), false);
+  assertEquals(state.inventory[item], 1);
+});
+
+Deno.test("each seed scatters exactly the intended items", () => {
+  for (const seed of [121, 7, 99]) {
+    const counts: Record<string, number> = {};
+    for (const { item } of itemPlacements(seed)) {
+      counts[item] = (counts[item] ?? 0) + 1;
     }
+    assertEquals(counts["Note piece"], 4);
+    assertEquals(counts["Broken Boat"], 1);
+    assertEquals(counts["Wooden Board"], 1);
+    assertEquals(counts["Candle"], 1);
+    assertEquals(counts["Note"], undefined);
+    assertEquals(counts["Fixed Boat"], undefined);
   }
-  if (!state) throw new Error("Found no item on this row.");
-  const item = itemAt(SEED, state.player.x + 1, 0)!;
-
-  const first = apply(state, { type: "move", direction: "east" });
-  assertEquals(first.map((e) => e.type), ["moved", "collected"]);
-  assertEquals(state.inventory[item], 1);
-
-  apply(state, { type: "move", direction: "west" });
-  const second = apply(state, { type: "move", direction: "east" });
-  assertEquals(second.map((e) => e.type), ["moved"]);
-  assertEquals(state.inventory[item], 1);
 });
 
 Deno.test("moving onto passable terrain moves the player", () => {

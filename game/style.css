@@ -99,3 +99,20 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+#mute,
+#crafting button {
+  align-self: start;
+  padding: 4px 10px;
+  color: inherit;
+  background: #262a31;
+  border: 1px solid #3a3f48;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#crafting {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

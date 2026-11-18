@@ -47,14 +47,16 @@ export class Controller {
     addEventListener("blur", () => this.held = []);
   }
 
+  craft(recipe: RecipeName) {
+    this.pressed = { type: "craft", recipe };
+    this.next();
+  }
+
   private keyDown(event: KeyboardEvent) {
     const direction = ARROWS[event.key];
     const recipe = RECIPE_KEYS[event.key];
     if (recipe && !event.ctrlKey && !event.metaKey && !event.altKey) {
-      if (!event.repeat) {
-        this.pressed = { type: "craft", recipe };
-        this.next();
-      }
+      if (!event.repeat) this.craft(recipe);
       return;
     }
     if (!direction || event.ctrlKey || event.metaKey || event.altKey) return;

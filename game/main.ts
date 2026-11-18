@@ -1,4 +1,4 @@
-import { newGame } from "../core/mod.ts";
+import { newGame, type RecipeName } from "../core/mod.ts";
 import { Controller } from "./controller.ts";
 import { startGridView } from "./grid/grid_view.ts";
 import { Hud } from "./hud.ts";
@@ -20,6 +20,18 @@ const sounds = new Sounds(
 const grid = await startGridView(document.getElementById("grid")!, state);
 const presenter = new Presenter([grid, hud, sounds]);
 const controller = new Controller(state, presenter);
+
+for (
+  const button of document.querySelectorAll<HTMLButtonElement>(
+    "button[data-recipe]",
+  )
+) {
+  button.addEventListener("click", (event) => {
+    controller.craft(button.dataset.recipe as RecipeName);
+    // After a mouse click, give keys back to the game. Keyboard users keep focus.
+    if (event.detail > 0) button.blur();
+  });
+}
 
 // For poking at in the browser console, such as comparing logical state with
 // presentation state: game.state
