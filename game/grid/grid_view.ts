@@ -29,10 +29,12 @@ const ITEM_COLORS: Record<Item, number> = {
 const PICKUP_MS = 80;
 
 const TERRAIN_COLORS: Record<Terrain, number> = {
-  grass: 0x5d9e4a,
-  forest: 0x2f6b3a,
-  water: 0x2d5f9e,
-  rock: 0x6e6a66,
+  grass: 0x587d0c,
+  forest: 0x42542b,
+  water: 0x59599e,
+  rock: 0x7c7c8c,
+  houseWall: 0x6a3d10,
+  houseFloor: 0x896642,
 };
 
 // Enough cells to cover the view, plus a margin so that the camera can lag behind
