@@ -37,6 +37,7 @@ const TERRAIN_COLORS: Record<Terrain, number> = {
   rock: 0x7c7c8c,
   houseWall: 0x6a3d10,
   houseFloor: 0x896642,
+  body: 0xc24100,
 };
 
 // Enough cells to cover the view, plus a margin so that the camera can lag behind

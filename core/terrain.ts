@@ -1,3 +1,22 @@
+//Working on spawning house
+const HOUSE_TOP = -10;
+
+const HOUSE_MAP = [
+  "WWWWWW",
+  "W..BW",
+  "W...W",
+  "W...W",
+  "WW.WW",
+  "GGGGG",
+];
+
+export const OVERRIDES: Record<string, Terrain> = {
+  W: "houseWall",
+  ".": "houseFloor",
+  B: "body",
+  G: "grass",
+};
+
 // The world is a pure function of a seed and coordinates. Nothing here is stored,
 // so the world can be effectively unbounded while saved state stays small.
 
@@ -7,9 +26,19 @@ export type Terrain =
   | "water"
   | "rock"
   | "houseWall"
-  | "houseFloor";
+  | "houseFloor"
+  | "body";
+
+export function mapLetter(x: number, y: number): string | null {
+  const row = HOUSE_MAP[y - HOUSE_TOP];
+  if (!row) return null;
+  const letter = row[x + (row.length - 1) / 2];
+  return letter && letter !== " " ? letter : null;
+}
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {
+  const letter = mapLetter(x, y);
+  if (letter) return OVERRIDES[letter];
   const raw = 0.65 * noise(seed, x, y, 9) + 0.35 * noise(seed + 1, x, y, 3);
   // Every game starts at the origin, so flatten the land there. Otherwise some
   // seeds would start inside a lake or walled into a pocket.
