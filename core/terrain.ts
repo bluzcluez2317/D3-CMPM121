@@ -1,17 +1,18 @@
 //Working on spawning house
-const HOUSE_TOP = -10;
+const HOUSE_TOP = -9;
 
 const HOUSE_MAP = [
-  "WWWWWW",
-  "W..BW",
-  "W...W",
-  "W...W",
-  "WW.WW",
+  "GGGGGGG",
+  "GWW.WWG",
+  "GW..BWG",
+  "GW...WG",
+  "GW...WG",
+  "GWWWWWG",
   "GGGGG",
 ];
 
 export const OVERRIDES: Record<string, Terrain> = {
-  W: "houseWall",
+  "W": "houseWall",
   ".": "houseFloor",
   B: "body",
   G: "grass",
