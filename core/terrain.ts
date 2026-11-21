@@ -1,6 +1,7 @@
-//Working on spawning house
+//House Spawn data
 const HOUSE_TOP = -9;
 
+// Based on the design from: https://github.com/rndmcnlly/outdoor-chef/blob/main/core/content.ts#L43
 const HOUSE_MAP = [
   "GGGGGGG",
   "GWW.WWG",
@@ -11,11 +12,32 @@ const HOUSE_MAP = [
   "GGGGG",
 ];
 
+//Working on spawning shed
+const SHED_TOP = 22;
+//const SHED_SIDE = -12;
+
+const SHED_MAP = [
+  "FFFFFFFFFF",
+  "FFFFFFFFFFFFF",
+  "FFWWWWWFFFF",
+  "FFW....WFF",
+  "FFW....WFF",
+  "FFW....WFF",
+  "FF.....WFF",
+  "FFW....WFF",
+  "FFW....WFF",
+  "FFW....WFF",
+  "FFWWWWWFFFF",
+  "FFFFFFFFFF",
+  "FFFFFFFFFFFFF",
+];
+
 export const OVERRIDES: Record<string, Terrain> = {
   "W": "houseWall",
   ".": "houseFloor",
   B: "body",
   G: "grass",
+  "F": "forest",
 };
 
 // The world is a pure function of a seed and coordinates. Nothing here is stored,
@@ -30,16 +52,26 @@ export type Terrain =
   | "houseFloor"
   | "body";
 
-export function mapLetter(x: number, y: number): string | null {
+export function mapLetterHouse(x: number, y: number): string | null {
   const row = HOUSE_MAP[y - HOUSE_TOP];
   if (!row) return null;
   const letter = row[x + (row.length - 1) / 2];
   return letter && letter !== " " ? letter : null;
 }
 
+export function mapLetterShed(x: number, y: number): string | null {
+  const row = SHED_MAP[y - SHED_TOP];
+  //const col = SHED_MAP[x - SHED_SIDE];
+  if (!row) return null;
+  const letter = row[x + (row.length - 1) / 2];
+  return letter && letter !== " " ? letter : null;
+}
+
 export function terrainAt(seed: number, x: number, y: number): Terrain {
-  const letter = mapLetter(x, y);
-  if (letter) return OVERRIDES[letter];
+  const letter1 = mapLetterHouse(x, y);
+  const letter2 = mapLetterShed(x, y);
+  if (letter1) return OVERRIDES[letter1];
+  if (letter2) return OVERRIDES[letter2];
   const raw = 0.65 * noise(seed, x, y, 9) + 0.35 * noise(seed + 1, x, y, 3);
   // Every game starts at the origin, so flatten the land there. Otherwise some
   // seeds would start inside a lake or walled into a pocket.
