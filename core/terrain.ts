@@ -14,20 +14,19 @@ const HOUSE_MAP = [
 
 //Working on spawning shed
 const SHED_TOP = 22;
-//const SHED_SIDE = -12;
 
 const SHED_MAP = [
   "FFFFFFFFFF",
   "FFFFFFFFFFFFF",
-  "FFWWWWWFFFF",
-  "FFW....WFF",
+  "FFWWWWWWFF",
+  "FFFFW....WFF",
   "FFW....WFF",
   "FFW....WFF",
   "FF.....WFF",
   "FFW....WFF",
   "FFW....WFF",
   "FFW....WFF",
-  "FFWWWWWFFFF",
+  "FFWWWWWWFF",
   "FFFFFFFFFF",
   "FFFFFFFFFFFFF",
 ];
@@ -55,15 +54,14 @@ export type Terrain =
 export function mapLetterHouse(x: number, y: number): string | null {
   const row = HOUSE_MAP[y - HOUSE_TOP];
   if (!row) return null;
-  const letter = row[x + (row.length - 1) / 2];
+  const letter = row[x + (row.length - 1)];
   return letter && letter !== " " ? letter : null;
 }
 
 export function mapLetterShed(x: number, y: number): string | null {
   const row = SHED_MAP[y - SHED_TOP];
-  //const col = SHED_MAP[x - SHED_SIDE];
   if (!row) return null;
-  const letter = row[x + (row.length - 1) / 2];
+  const letter = row[x + (row.length - 1)];
   return letter && letter !== " " ? letter : null;
 }
 
